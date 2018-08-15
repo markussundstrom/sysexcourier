@@ -2,11 +2,13 @@
 
 #include <ncurses.h>
 #include <string.h>
+#include "sc_midi.h"
 
 
 int main () {
     WINDOW *dataentry;
     int height, width;
+    init_jack();
     initscr();
     start_color();
     raw();
