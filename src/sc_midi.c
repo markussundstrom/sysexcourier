@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <jack/jack.h>
 #include <jack/midiport.h>
+#include "sc_midi.h"
 
 
 struct midibyte {
@@ -16,8 +17,6 @@ jack_client_t *sc_jack_client;
 jack_port_t *midi_in;
 jack_port_t *midi_out;
 
-#define SC_INPUTPORT 1
-#define SC_OUTPUTPORT 2
 
 void init_client() {
     sc_jack_client = jack_client_open("SysExCourier", JackNullOption, NULL);
@@ -41,20 +40,20 @@ void init_client() {
     }
 }
 
-char** list_ports(int *count) {
+char** list_ports(int *count, portdirection dir) {
     char const **ports;
     char  **returnedports;
     size_t portnamelength; 
     int i;
 
     portnamelength = jack_port_name_size();
-    ports = jack_get_ports(sc_jack_client, NULL, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput);
+    ports = jack_get_ports(sc_jack_client, NULL, JACK_DEFAULT_MIDI_TYPE, 
+                           (dir == inputport) ? 
+                            JackPortIsInput : JackPortIsOutput);
     *count = 0;
-    fprintf(stderr, "%s","jack_get_ports");
     while(ports[*count] != NULL) {
         (*count)++;
     }
-    fprintf(stderr,"%d", *count);
     returnedports = calloc((*count), sizeof (char*));
 
     for(i = 0; i < *count; i++) {
