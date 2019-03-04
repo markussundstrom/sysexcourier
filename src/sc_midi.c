@@ -48,8 +48,8 @@ char** list_ports(int *count, portdirection dir) {
 
     portnamelength = jack_port_name_size();
     ports = jack_get_ports(sc_jack_client, NULL, JACK_DEFAULT_MIDI_TYPE, 
-                           (dir == inputport) ? 
-                            JackPortIsInput : JackPortIsOutput);
+                           (dir == rxport) ? 
+                            JackPortIsOutput : JackPortIsInput);
     *count = 0;
     while(ports[*count] != NULL) {
         (*count)++;

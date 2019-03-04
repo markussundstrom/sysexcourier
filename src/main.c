@@ -54,11 +54,11 @@ int main () {
                 running = 0;
                 break;
             case KEY_F(5):
-                ports_menu(outputport);
+                ports_menu(rxport);
                 refresh_sc_screen();
                 break;
             case KEY_F(6):
-                ports_menu(inputport);
+                ports_menu(txport);
                 refresh_sc_screen();
             default:
                 break;
@@ -86,8 +86,8 @@ void ports_menu(portdirection dir) {
     }
     menuitems[count] = (ITEM *)NULL;
     portsmenu = new_menu((ITEM **)menuitems);
-    begx = getbegx((dir == inputport) ? txportwin : rxportwin);
-    maxx = getmaxx((dir == inputport) ? txportwin : rxportwin);
+    begx = getbegx((dir == rxport) ? rxportwin : txportwin);
+    maxx = getmaxx((dir == rxport) ? rxportwin : txportwin);
     menuwindow = newwin(LINES-3, maxx, 1, begx);
     set_menu_win(portsmenu, menuwindow);
     post_menu(portsmenu);
@@ -127,6 +127,4 @@ void refresh_sc_screen() {
     wnoutrefresh(txportwin);
     wnoutrefresh(rxportwin);
     doupdate();
-        
-
 }
