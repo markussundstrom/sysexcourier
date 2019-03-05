@@ -76,7 +76,7 @@ void ports_menu(portdirection dir) {
     ITEM **menuitems;
     MENU *portsmenu;
     WINDOW *menuwindow;
-    int count, key, i, begx, maxx;
+    int count, key, i, begx, maxx, menu;
     
     /*Get list of ports and setup menu contents*/ 
     ports = list_ports(&count, dir);
@@ -92,14 +92,23 @@ void ports_menu(portdirection dir) {
     set_menu_win(portsmenu, menuwindow);
     post_menu(portsmenu);
     wrefresh(menuwindow);
-
-    while ((key = getch()) != KEY_F(1)) {
+    
+    menu = 1;
+    while (menu) {
+        key = getch();
         switch(key) {
+            case KEY_F(1):
+                menu = 0;
+                break;
             case KEY_DOWN:
                 menu_driver(portsmenu, REQ_DOWN_ITEM);
                 break;
             case KEY_UP:
                 menu_driver(portsmenu, REQ_UP_ITEM);
+                break;
+            case 10:
+                connect_port(dir, item_name(current_item(portsmenu)));
+                menu = 0;
                 break;
         }
         wrefresh(menuwindow);

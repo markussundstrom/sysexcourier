@@ -9,7 +9,8 @@ of any other Jack applications ports.*/
 typedef enum {rxport, txport} portdirection; 
 
 void init_client();
-void shutdown_client();
 char ** list_ports(int *count, portdirection dir);
+void connect_port(portdirection dir, const char *port);
+void shutdown_client();
 
 #endif /* SC_MIDI_H */

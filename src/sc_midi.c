@@ -38,6 +38,10 @@ void init_client() {
         fprintf(stderr, "Unable to create output port");
         exit(1);
     }
+    if (jack_activate (sc_jack_client)) {
+		fprintf (stderr, "cannot activate client");
+		exit (1);
+	}
 }
 
 char** list_ports(int *count, portdirection dir) {
@@ -64,6 +68,18 @@ char** list_ports(int *count, portdirection dir) {
     jack_free(ports);
     return returnedports;
 }
+
+void connect_port(portdirection dir, const char *port) {
+    int errno;
+    if (dir == rxport) {
+        jack_port_disconnect(sc_jack_client, midi_in);
+        errno = jack_connect(sc_jack_client, port, jack_port_name(midi_in));
+    } else {
+        jack_port_disconnect(sc_jack_client, midi_out);
+        errno = jack_connect(sc_jack_client, jack_port_name(midi_out), port);
+    }
+}
+
 
 
 
