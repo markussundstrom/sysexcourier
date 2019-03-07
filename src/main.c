@@ -127,10 +127,41 @@ void ports_menu(portdirection dir) {
 }
 
 void refresh_sc_screen() {
+    int count;
+    char **connections;
+    int i;
+    
+    count = 0;
     touchwin(stdscr);
     touchwin(dataentry);
-    touchwin(txportwin);
+    werase(rxportwin);
+    werase(txportwin);
+    connections = get_connections(&count, rxport);
+    if(count > 0) {
+        /*GUI only designed for displaying one connection. Displaying first
+          connection and throwing away the rest*/
+        mvwprintw(rxportwin, 0, 0, connections[0]);
+        for(i = 0; i < count; i++) {
+            free(connections[i]);
+        }
+        free(connections);
+        
+    } else {
+        wmove(rxportwin, 0, 0);
+        clrtoeol();
+    }
+    connections = get_connections(&count, txport);
+    if(count > 0) {
+        /*GUI only designed for displaying one connection. Displaying first
+          connection and throwing away the rest*/
+        mvwprintw(txportwin, 0, 0, connections[0]);
+        for(i = 0; i < count; i++) {
+            free(connections[i]);
+        }
+        free(connections);
+    }
     touchwin(rxportwin);
+    touchwin(txportwin);
     wnoutrefresh(stdscr);
     wnoutrefresh(dataentry);
     wnoutrefresh(txportwin);

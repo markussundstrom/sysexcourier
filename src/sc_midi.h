@@ -11,6 +11,7 @@ typedef enum {rxport, txport} portdirection;
 void init_client();
 char ** list_ports(int *count, portdirection dir);
 void connect_port(portdirection dir, const char *port);
+char ** get_connections(int *count, portdirection dir);
 void shutdown_client();
 
 #endif /* SC_MIDI_H */

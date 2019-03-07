@@ -58,7 +58,7 @@ char** list_ports(int *count, portdirection dir) {
     while(ports[*count] != NULL) {
         (*count)++;
     }
-    returnedports = calloc((*count), sizeof (char*));
+    returnedports = calloc((*count), sizeof(char*));
 
     for(i = 0; i < *count; i++) {
         returnedports[i] = calloc(portnamelength, sizeof(char));
@@ -71,6 +71,8 @@ char** list_ports(int *count, portdirection dir) {
 
 void connect_port(portdirection dir, const char *port) {
     int errno;
+    /*FIXME Should there be a separate function for disconnecting, 
+      making it possible to run this several times to connect several ports?*/
     if (dir == rxport) {
         jack_port_disconnect(sc_jack_client, midi_in);
         errno = jack_connect(sc_jack_client, port, jack_port_name(midi_in));
@@ -79,6 +81,37 @@ void connect_port(portdirection dir, const char *port) {
         errno = jack_connect(sc_jack_client, jack_port_name(midi_out), port);
     }
 }
+
+char ** get_connections(int *count, portdirection dir) {
+    size_t portnamelength;
+    char **connections;
+    char const **ports;
+    int i;
+    
+    portnamelength = jack_port_name_size();
+    ports = jack_port_get_connections((dir == rxport) ? midi_in : midi_out);    
+    *count = 0;
+    
+    if (ports != NULL) {
+        while(ports[*count] != NULL) {
+            (*count)++;
+        }
+    }
+    connections = calloc((*count), sizeof(char*));
+
+    for(i = 0; i < *count; i++) {
+        connections[i] = calloc(portnamelength, sizeof(char));
+        strcpy(connections[i], ports[i]);
+    }
+    jack_free(ports);
+    return connections;
+}
+
+
+
+
+
+
 
 
 
