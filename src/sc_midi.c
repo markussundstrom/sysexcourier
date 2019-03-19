@@ -7,12 +7,6 @@
 #include "sc_midi.h"
 
 
-struct midibyte {
-    struct midibyte *next;
-    struct midibyte *prev;
-    jack_midi_data_t data;
-};
-
 jack_client_t *sc_jack_client;
 jack_port_t *midi_in;
 jack_port_t *midi_out;
@@ -106,15 +100,6 @@ char ** get_connections(int *count, portdirection dir) {
     jack_free(ports);
     return connections;
 }
-
-
-
-
-
-
-
-
-
 
 void shutdown_client() {
     jack_port_unregister(sc_jack_client, midi_in);

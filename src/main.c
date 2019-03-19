@@ -5,6 +5,7 @@
 #include <ncurses.h>
 #include <menu.h>
 #include "sc_midi.h"
+#include "sc_data.h"
 
 /*Construct a menu listing available jack ports, in or out, and await selection*/
 void ports_menu(portdirection dir);
@@ -17,6 +18,7 @@ WINDOW *dataentry, *rxportwin, *txportwin;
 int main () {
     int height, width, running;
     init_client();
+    init_data();
     initscr();
     start_color();
     raw();

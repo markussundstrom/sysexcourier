@@ -1,6 +1,5 @@
 #ifndef SC_MIDI_H
 #define SC_MIDI_H
-struct midibyte;
 
 /*Enumeration used to indicate whether a midiport is receiving or transmitting.
 This enumeration is always to be used from the pov of this application, ie
