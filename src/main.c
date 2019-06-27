@@ -12,13 +12,17 @@ void ports_menu(portdirection dir);
 /*Refresh all elements of main screen*/
 void refresh_sc_screen();
 
+/*refresh dataentry contents*/
+void refresh_dataentry();
+
 
 WINDOW *dataentry, *rxportwin, *txportwin;
+int entryoffset;
 
 int main () {
     int height, width, running;
     init_client();
-    init_data();
+    init_mididata();
     initscr();
     start_color();
     raw();
@@ -34,7 +38,6 @@ int main () {
     height = LINES - 6;
     width = COLS - 4;
     dataentry = newwin(height, width, 1, 2);
-    box(dataentry, ACS_VLINE, ACS_HLINE);
     wrefresh(dataentry);
     rxportwin = newwin(1, (COLS/2)-4, LINES-3  , 2);
     wbkgd(rxportwin, COLOR_PAIR(2));
@@ -46,8 +49,9 @@ int main () {
     mvprintw(LINES-4, 2, "Receive from");
     mvprintw(LINES-4, (COLS/2)+2, "Send to");
     attroff(A_BOLD);
-
+    entryoffset = 0;
     running = 1;
+    refresh_sc_screen();
     while (running) {
         int keypress;
         keypress = getch();
@@ -135,7 +139,7 @@ void refresh_sc_screen() {
     
     count = 0;
     touchwin(stdscr);
-    touchwin(dataentry);
+/*    touchwin(dataentry);*/
     werase(rxportwin);
     werase(txportwin);
     connections = get_connections(&count, rxport);
@@ -165,8 +169,50 @@ void refresh_sc_screen() {
     touchwin(rxportwin);
     touchwin(txportwin);
     wnoutrefresh(stdscr);
-    wnoutrefresh(dataentry);
+/*    wnoutrefresh(dataentry);*/
     wnoutrefresh(txportwin);
     wnoutrefresh(rxportwin);
+    refresh_dataentry();
     doupdate();
+}
+
+void refresh_dataentry() {
+    unsigned char *data;
+    int count;
+    int i, x, y;
+
+    count = 0;
+    data = get_mididata(&count);
+    wclear(dataentry);
+    x = y = 0;
+    wmove(dataentry, y, x);
+    if (data != NULL) {
+        for (i = 0; i < count; i++) {
+            if (i == entryoffset) {
+                wattron(dataentry, A_REVERSE);
+            } else {
+                wattroff(dataentry, A_REVERSE);
+            }
+            mvwprintw (dataentry, y, x, "%.2X", data[i]);
+            /*Is there enough room for displaying another byte on this line, 
+            factoring in window borders?*/
+            /*FIXME Scrollbar?*/
+            if (x >= LINES - 4 - 2) {
+                x = 0;
+                y++;
+            } else {
+                x += 3;
+            }
+            /*wmove(dataentry, y, x);*/
+        }
+        if (entryoffset < count) {
+            wattroff(dataentry, A_REVERSE);
+        } else {
+            wattron(dataentry, A_REVERSE);
+        }
+
+        mvwprintw(dataentry, y, x, "--");
+        /*touchwin(dataentry);*/
+        wrefresh(dataentry);
+    }
 }
